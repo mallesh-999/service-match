@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Users of the platform
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(USER)
+  jobs      Job[]     @relation("UserJobs")           // Jobs posted by this user (if recruiter)
+  applications JobApplication[]                     // Jobs applied by this user
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// Jobs posted on the platform
+model Job {
+  id          Int                @id @default(autoincrement())
+  title       String
+  description String?
+  location    String?
+  company     String?
+  postedBy    User               @relation("UserJobs", fields: [postedById], references: [id])
+  postedById  Int
+  applications JobApplication[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+// Users applying for jobs
+model JobApplication {
+  id        Int      @id @default(autoincrement())
+  job       Job      @relation(fields: [jobId], references: [id])
+  jobId     Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  status    ApplicationStatus   @default(PENDING)
+  appliedAt DateTime  @default(now())
+}
+
+// Enums
+enum Role {
+  USER
+  RECRUITER
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}

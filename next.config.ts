@@ -1,7 +1,9 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  output: "export",                 // required for static export
+  basePath: "/service-match",       // your GitHub repo name
+  assetPrefix: "/service-match/",   // static assets prefix
+  reactStrictMode: true,
 };
 
-export default nextConfig;
+module.exports = nextConfig;
